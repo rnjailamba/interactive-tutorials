@@ -43,7 +43,7 @@ if __name__ == '__main__':
         choices=constants.DOMAIN_DATA.keys()
     )
 
-    parser.add_argument("-p", "--port", help="port to listen to", default=5000, type=int)
+    parser.add_argument("-p", "--port", help="port to listen to", type=int)
 
     args = parser.parse_args()
     current_domain = args.domain
@@ -239,12 +239,17 @@ def get_host():
     if is_development_mode():
         return current_domain
 
+    if is_heroku_server():
+        return current_domain
+
     return request.host[4:] if request.host.startswith("www.") else request.host
 
 
 def is_development_mode():
     return "localhost" in request.host or "127.0.0.1" in request.host
 
+def is_heroku_server():
+    return "heroku" in request.host
 
 def get_domain_data():
     data = constants.DOMAIN_DATA[get_host()]
